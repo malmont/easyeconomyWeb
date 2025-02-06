@@ -1,104 +1,109 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-  -->
-  <base href="/easyeconomyWeb/">
-  <meta charset="UTF-8">
-  <title>easyeconomy</title>
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
-
-  <!-- iOS meta tags & icons -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="easyeconomy">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
-
-  <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" type="text/css" href="splash/style.css">
-</head>
-<body style="position: fixed; inset: 0px; overflow: hidden; padding: 0px; margin: 0px; user-select: none; touch-action: none; font: 14px sans-serif; color: red;">
-  <h1>Hello, Flutter!</h1>
-  <!-- This script installs service_worker.js to provide PWA functionality to
-       application. For more information, see:
-       https://developers.google.com/web/fundamentals/primers/service-workers -->
-  <script>
-    const serviceWorkerVersion = "2810830315";
-    var scriptLoaded = false;
-    function loadMainDartJs() {
-      if (scriptLoaded) {
-        return;
+  <head>
+    <!-- Si votre application est servie dans un sous-dossier, assurez-vous que le href est correct -->
+    <base href="/easyeconomyWeb/">
+    <meta charset="UTF-8">
+    <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+    <meta name="description" content="A new Flutter project.">
+    
+    <!-- iOS meta tags & icônes -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="easyeconomy">
+    <link rel="apple-touch-icon" href="icons/Icon-192.png">
+    
+    <!-- Fichier manifest -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" type="text/css" href="splash/style.css">
+    
+    <title>easyeconomy</title>
+    
+    <!-- Styles pour simuler un écran mobile -->
+    <style>
+      body {
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f5f5f5; /* Couleur de fond */
       }
-      scriptLoaded = true;
-      var scriptTag = document.createElement('script');
-      scriptTag.src = 'main.dart.js';
-      scriptTag.type = 'application/javascript';
-      document.body.append(scriptTag);
-    }
-
-    if ('serviceWorker' in navigator) {
-      // Service workers are supported. Use them.
-      window.addEventListener('load', function () {
-        // Wait for registration to finish before dropping the <script> tag.
-        // Otherwise, the browser will load the script multiple times,
-        // potentially different versions.
-        var serviceWorkerUrl = 'flutter_service_worker.js?v=' + serviceWorkerVersion;
-        navigator.serviceWorker.register(serviceWorkerUrl)
-          .then((reg) => {
-            function waitForActivation(serviceWorker) {
-              serviceWorker.addEventListener('statechange', () => {
-                if (serviceWorker.state == 'activated') {
-                  console.log('Installed new service worker.');
+      #flutter_container {
+        width: 375px;  /* Largeur simulée d'un mobile */
+        height: 667px; /* Hauteur simulée d'un mobile */
+        border: 1px solid #ccc; /* Pour simuler l'appareil (optionnel) */
+        border-radius: 20px; /* Coins arrondis */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Ombre esthétique */
+        overflow: hidden; /* Le contenu reste dans la boîte */
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Conteneur simulant un écran mobile -->
+    <div id="flutter_container">
+      <!-- Code d'installation du service worker et chargement du script principal -->
+      <script>
+        const serviceWorkerVersion = "2810830315";
+        var scriptLoaded = false;
+        function loadMainDartJs() {
+          if (scriptLoaded) {
+            return;
+          }
+          scriptLoaded = true;
+          var scriptTag = document.createElement('script');
+          scriptTag.src = 'main.dart.js';
+          scriptTag.type = 'application/javascript';
+          document.body.append(scriptTag);
+        }
+    
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', function () {
+            var serviceWorkerUrl = 'flutter_service_worker.js?v=' + serviceWorkerVersion;
+            navigator.serviceWorker.register(serviceWorkerUrl)
+              .then((reg) => {
+                function waitForActivation(serviceWorker) {
+                  serviceWorker.addEventListener('statechange', () => {
+                    if (serviceWorker.state == 'activated') {
+                      console.log('Installed new service worker.');
+                      loadMainDartJs();
+                    }
+                  });
+                }
+                if (!reg.active && (reg.installing || reg.waiting)) {
+                  waitForActivation(reg.installing ?? reg.waiting);
+                } else if (!reg.active.scriptURL.endsWith(serviceWorkerVersion)) {
+                  console.log('New service worker available.');
+                  reg.update();
+                  waitForActivation(reg.installing);
+                } else {
+                  console.log('Loading app from service worker.');
                   loadMainDartJs();
                 }
               });
-            }
-            if (!reg.active && (reg.installing || reg.waiting)) {
-              // No active web worker and we have installed or are installing
-              // one for the first time. Simply wait for it to activate.
-              waitForActivation(reg.installing ?? reg.waiting);
-            } else if (!reg.active.scriptURL.endsWith(serviceWorkerVersion)) {
-              // When the app updates the serviceWorkerVersion changes, so we
-              // need to ask the service worker to update.
-              console.log('New service worker available.');
-              reg.update();
-              waitForActivation(reg.installing);
-            } else {
-              // Existing service worker is still good.
-              console.log('Loading app from service worker.');
-              loadMainDartJs();
-            }
+    
+            // Fallback si le service worker ne charge pas dans un délai raisonnable
+            setTimeout(() => {
+              if (!scriptLoaded) {
+                console.warn('Failed to load app from service worker. Falling back to plain <script> tag.');
+                loadMainDartJs();
+              }
+            }, 4000);
           });
-
-        // If service worker doesn't succeed in a reasonable amount of time,
-        // fallback to plaint <script> tag.
-        setTimeout(() => {
-          if (!scriptLoaded) {
-            console.warn(
-              'Failed to load app from service worker. Falling back to plain <script> tag.',
-            );
-            loadMainDartJs();
-          }
-        }, 4000);
-      });
-    } else {
-      // Service workers not supported. Just drop the <script> tag.
-      loadMainDartJs();
-    }
-  </script>
-  <picture id="splash">
-    <source srcset="splash/img/light-1x.png 1x, splash/img/light-2x.png 2x, splash/img/light-3x.png 3x, splash/img/light-4x.png 4x" media="(prefers-color-scheme: light) or (prefers-color-scheme: no-preference)">
-    <source srcset="splash/img/dark-1x.png 1x, splash/img/dark-2x.png 2x, splash/img/dark-3x.png 3x, splash/img/dark-4x.png 4x" media="(prefers-color-scheme: dark)">
-    <img class="center" src="splash/img/light-1x.png" />
-  </picture>
-</body>
+        } else {
+          // Si les service workers ne sont pas supportés
+          loadMainDartJs();
+        }
+      </script>
+    
+      <!-- Splash screen (optionnel) -->
+      <picture id="splash">
+        <source srcset="splash/img/light-1x.png 1x, splash/img/light-2x.png 2x, splash/img/light-3x.png 3x, splash/img/light-4x.png 4x"
+                media="(prefers-color-scheme: light) or (prefers-color-scheme: no-preference)">
+        <source srcset="splash/img/dark-1x.png 1x, splash/img/dark-2x.png 2x, splash/img/dark-3x.png 3x, splash/img/dark-4x.png 4x"
+                media="(prefers-color-scheme: dark)">
+        <img class="center" src="splash/img/light-1x.png" alt="Splash screen" />
+      </picture>
+    </div>
+  </body>
 </html>
